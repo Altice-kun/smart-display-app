@@ -1,0 +1,95 @@
+syntax = "proto3";
+package remote;
+
+option java_package = "com.smartdisplay.app.tv.proto";
+option java_multiple_files = true;
+
+// このファイルは Android TV Remote protocol v2（Google TVアプリが実際に使っているものと同じ
+// プロトコル）のメッセージ定義です。ADBや開発者モードは不要で、Google TV/Android TV端末に
+// プリインストールされている「Android TV Remote Service」だけで動作します。
+//
+// フィールド番号・メッセージ構造は下記の公開実装（Apache-2.0）で検証済みです:
+//   https://github.com/tronikos/androidtvremote2 (v0.0.14) src/androidtvremote2/remotemessage.proto
+//   （さらに元をたどると https://github.com/louis49/androidtv-remote の解析結果に由来）
+//
+// このファイルは「ペアリング完了後のコマンド送信」に必要な最小限のメッセージのみを含む
+// トリム版です。IMEでのテキスト入力や音声送信など、全メッセージが必要な場合は上記リポジトリの
+// remotemessage.proto を参照してください。
+// キーコードもよく使うものだけを抜粋していますが、値はAndroidのKeyEvent定数そのものなので
+// ここに無い値でも整数値さえ合っていればTV側は正しく解釈します。
+
+enum RemoteDirection {
+  UNKNOWN_DIRECTION = 0;
+  START_LONG = 1;
+  END_LONG = 2;
+  SHORT = 3;
+}
+
+enum RemoteKeyCode {
+  KEYCODE_UNKNOWN = 0;
+  KEYCODE_HOME = 3;
+  KEYCODE_BACK = 4;
+  KEYCODE_DPAD_UP = 19;
+  KEYCODE_DPAD_DOWN = 20;
+  KEYCODE_DPAD_LEFT = 21;
+  KEYCODE_DPAD_RIGHT = 22;
+  KEYCODE_DPAD_CENTER = 23;
+  KEYCODE_VOLUME_UP = 24;
+  KEYCODE_VOLUME_DOWN = 25;
+  KEYCODE_POWER = 26;
+  KEYCODE_MENU = 82;
+  KEYCODE_SEARCH = 84;
+  KEYCODE_MEDIA_PLAY_PAUSE = 85;
+  KEYCODE_MEDIA_STOP = 86;
+  KEYCODE_MEDIA_NEXT = 87;
+  KEYCODE_MEDIA_PREVIOUS = 88;
+  KEYCODE_VOLUME_MUTE = 164;
+  KEYCODE_SETTINGS = 176;
+}
+
+message RemoteKeyInject {
+  RemoteKeyCode key_code = 1;
+  RemoteDirection direction = 2;
+}
+
+message RemoteAppLinkLaunchRequest {
+  string app_link = 1;
+}
+
+message RemoteDeviceInfo {
+  string model = 1;
+  string vendor = 2;
+  int32 unknown1 = 3;
+  string unknown2 = 4;
+  string package_name = 5;
+  string app_version = 6;
+}
+
+message RemoteConfigure {
+  int32 code1 = 1;
+  RemoteDeviceInfo device_info = 2;
+}
+
+message RemoteSetActive {
+  int32 active = 1;
+}
+
+message RemotePingRequest {
+  int32 val1 = 1;
+  int32 val2 = 2;
+}
+
+message RemotePingResponse {
+  int32 val1 = 1;
+}
+
+// 実機とやり取りする最上位メッセージ。1回の送受信につき、どれか1つのフィールドだけを
+// セットして送る（プロトコル上は oneof ではなく、慣習として1つだけ埋める形）。
+message RemoteMessage {
+  RemoteConfigure remote_configure = 1;
+  RemoteSetActive remote_set_active = 2;
+  RemotePingRequest remote_ping_request = 8;
+  RemotePingResponse remote_ping_response = 9;
+  RemoteKeyInject remote_key_inject = 10;
+  RemoteAppLinkLaunchRequest remote_app_link_launch_request = 90;
+}
