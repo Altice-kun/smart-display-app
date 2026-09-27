@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.SmartDisplay" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.SmartDisplay" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
