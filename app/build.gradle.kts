@@ -52,7 +52,7 @@ protobuf {
     }
     generateProtoTasks {
         all().forEach { task ->
-            task.plugins {
+            task.builtins {
                 create("java") { option("lite") }
             }
         }
