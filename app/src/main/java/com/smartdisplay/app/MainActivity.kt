@@ -71,18 +71,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         ambientPlayer = AmbientSoundPlayer(this)
 
-        voiceManager = VoiceCommandManager(this) { command ->
-            when (command) {
-                "home" -> currentTab = AppTab.HOME
-                "music" -> currentTab = AppTab.MUSIC
-                "tv" -> currentTab = AppTab.TV
-                "calendar" -> currentTab = AppTab.CALENDAR
-                "photos" -> currentTab = AppTab.PHOTOS
-                "tools" -> currentTab = AppTab.TOOLS
-                "screensaver" -> idleController.notifyInteraction()
-                // play / pause / volume_up / volume_down は各画面のプレイヤーロジックに接続する
+        voiceManager = VoiceCommandManager(
+            context = this,
+            onCommand = { command ->
+                when (command) {
+                    "home" -> currentTab = AppTab.HOME
+                    "music" -> currentTab = AppTab.MUSIC
+                    "tv" -> currentTab = AppTab.TV
+                    "calendar" -> currentTab = AppTab.CALENDAR
+                    "photos" -> currentTab = AppTab.PHOTOS
+                    "tools" -> currentTab = AppTab.TOOLS
+                    "screensaver" -> idleController.notifyInteraction()
+                    // play / pause / volume_up / volume_down は各画面のプレイヤーロジックに接続する
+                }
             }
-        }
+        )
 
         setContent {
             AppTheme {
